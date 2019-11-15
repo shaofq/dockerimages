@@ -1,0 +1,31 @@
+version: '3.1'
+services:
+  hhwebredis:
+    image: redis
+    container_name: hhredis
+    command: redis-server /etc/redis.conf
+    volumes:
+      - /home/redis/data:/data
+      - /home/redis/conf/redis.conf:/etc/redis.conf
+    ports:
+      - 6379:6379 
+    network_mode: "host"
+  hhwebsite:
+    image: runningshao/tomcat:latest
+    volumes:
+      - /home/website:/usr/local/tomcat/webapps
+    ports:
+      - 81:8080 
+    network_mode: "host"
+    environment:
+      CATALINA_OPTS: -Djava.security.egd=file:/dev/./urandom
+  hhwebbiz:
+    image: runningshao/tomcat:latest
+    volumes:
+      - /home/biz/web:/usr/local/tomcat/webapps
+      - /home/biz/logs:/usr/local/tomcat/logs
+    ports:
+      - 87:8080 
+    network_mode: "host"
+    environment:
+      CATALINA_OPTS: -Djava.security.egd=file:/dev/./urandom

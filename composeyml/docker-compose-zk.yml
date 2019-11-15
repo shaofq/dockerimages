@@ -1,0 +1,9 @@
+version: '3.1'
+services:
+    zoo2:
+        image: zookeeper
+        restart: always
+        environment:
+            ZOO_MY_ID: 1
+            ZOO_SERVERS: server.1=172.16.36.123:2888:3888 server.2=172.16.36.124:2888:3888 server.3=172.16.36.125:2888:3888
+        network_mode: host
