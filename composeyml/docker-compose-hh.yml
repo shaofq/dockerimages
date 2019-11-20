@@ -9,23 +9,76 @@ services:
       - /home/redis/conf/redis.conf:/etc/redis.conf
     ports:
       - 6379:6379 
-    network_mode: "host"
+    networks:
+      - my-network
+  #网站系统tomcat
   hhwebsite:
     image: runningshao/tomcat:latest
     volumes:
       - /home/website:/usr/local/tomcat/webapps
     ports:
-      - 81:8080 
+      - 80:8080 
+    depends_on:
+      - hhwebredis
     network_mode: "host"
     environment:
       CATALINA_OPTS: -Djava.security.egd=file:/dev/./urandom
+  #业务系统tomcat    
   hhwebbiz:
     image: runningshao/tomcat:latest
     volumes:
       - /home/biz/web:/usr/local/tomcat/webapps
       - /home/biz/logs:/usr/local/tomcat/logs
     ports:
-      - 87:8080 
-    network_mode: "host"
+      - 83:8080 
+    depends_on:
+      - hhwebredis
+    networks:
+      - my-network
     environment:
       CATALINA_OPTS: -Djava.security.egd=file:/dev/./urandom
+  #edi业务处理    
+  hhedibiz:
+    image: runningshao/tomcat:latest
+    volumes:
+      - /home/biz/web:/usr/local/tomcat/webapps
+      - /home/biz/logs:/usr/local/tomcat/logs
+    ports:
+      - 8787:8080 
+    depends_on:
+      - hhwebredis
+    networks:
+      - my-network
+    environment:
+      CATALINA_OPTS: -Djava.security.egd=file:/dev/./urandom
+  #tomcat自动处理    
+  hhautobiz:
+    image: runningshao/tomcat:latest
+    volumes:
+      - /home/biz/web:/usr/local/tomcat/webapps
+      - /home/biz/logs:/usr/local/tomcat/logs
+    ports:
+      - 8989:8080 
+    depends_on:
+      - hhwebredis
+    networks:
+      - my-network
+    environment:
+      CATALINA_OPTS: -Djava.security.egd=file:/dev/./urandom     
+ #tomcat报表处理    
+  hhreport:
+    image: runningshao/tomcat:latest
+    volumes:
+      - /home/biz/web:/usr/local/tomcat/webapps
+      - /home/biz/logs:/usr/local/tomcat/logs
+    ports:
+      - 8989:8080 
+    depends_on:
+      - hhwebredis
+    networks:
+      - my-network
+    environment:
+      CATALINA_OPTS: -Djava.security.egd=file:/dev/./urandom  
+networks:
+  my-network:
+    driver: overlay
